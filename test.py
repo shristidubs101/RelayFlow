@@ -1,3 +1,3 @@
-from app.core.config import engine
+from app.core.config import settings
 
-print(engine)
+print(settings.DATABASE_URL)
