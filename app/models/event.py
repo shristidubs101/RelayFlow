@@ -3,7 +3,7 @@ from uuid import UUID, uuid4
 
 from sqlalchemy import DateTime, String, func
 from sqlalchemy.dialects.postgresql import JSONB, UUID as PG_UUID
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column,relationship
 
 from app.db.session import Base
 
@@ -28,3 +28,5 @@ class Event(Base):
         DateTime(timezone=True),
         server_default=func.now(),
     )
+    
+    deliveries: Mapped[list["Delivery"]] = relationship(back_populates = "event")

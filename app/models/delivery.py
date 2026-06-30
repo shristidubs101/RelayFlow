@@ -1,15 +1,18 @@
 from datetime import datetime
-from uuid import UUID
-from enum import Enum
 
-from sqlalchemy import DateTime, String, func, ForeignKey, Enum
+from enum import Enum as PyEnum
+from sqlalchemy import Enum as SQLEnum
+
+from sqlalchemy import DateTime, String, func, ForeignKey
+from uuid import UUID as PyUUID
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.session import Base
 
 
-class DeliveryStatus(str, Enum):
+
+class DeliveryStatus(str, PyEnum):
     PENDING = "pending"
     PROCESSING = "processing"
     SUCCESS = "success"
@@ -20,12 +23,12 @@ class Delivery(Base):
     
     id: Mapped[int] = mapped_column(primary_key=True)
     
-    event_id: Mapped[UUID] = mapped_column(ForeignKey("events.id"))
+    event_id: Mapped[PyUUID] = mapped_column(ForeignKey("events.id"))
     
     endpoint_id: Mapped[int] = mapped_column(ForeignKey("webhook_endpoints.id"))
     
     status: Mapped[DeliveryStatus] = mapped_column(
-        Enum(DeliveryStatus),
+        SQLEnum(DeliveryStatus),
         default=DeliveryStatus.PENDING
     )
     
@@ -48,4 +51,12 @@ class Delivery(Base):
         DateTime(timezone=True),
         server_default=func.now(),
         onupdate=func.now(),
+    )
+    
+    event : Mapped["Event"] = relationship(
+        back_populates="deliveries"
+    )
+    
+    endpoint: Mapped["WebhookEndpoint"] = relationship(
+        back_populates="deliveries"
     )

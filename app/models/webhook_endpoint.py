@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from sqlalchemy import Boolean, DateTime, String, func
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.session import Base
 
@@ -35,7 +35,6 @@ class WebhookEndpoint(Base):
         onupdate=func.now(),
     )
     
-
-    
-
-    
+    deliveries: Mapped[list["Delivery"]] = relationship(
+        back_populates="endpoint"
+    )    
