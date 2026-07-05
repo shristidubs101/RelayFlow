@@ -5,6 +5,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.session import Base
 
+
 class WebhookEndpoint(Base):
     __tablename__ = "webhook_endpoints"
 
@@ -34,7 +35,7 @@ class WebhookEndpoint(Base):
         server_default=func.now(),
         onupdate=func.now(),
     )
-    
+
     deliveries: Mapped[list["Delivery"]] = relationship(
         back_populates="endpoint"
-    )    
+    )
