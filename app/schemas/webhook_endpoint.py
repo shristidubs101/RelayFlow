@@ -15,3 +15,7 @@ class WebhookEndpointResponse(BaseModel):
     updated_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+    
+class WebhookEndpointUpdate(BaseModel):
+    url: HttpUrl | None = None
+    secret: str | None = None
