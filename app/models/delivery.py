@@ -5,7 +5,6 @@ from sqlalchemy import Enum as SQLEnum
 
 from sqlalchemy import DateTime, String, func, ForeignKey
 from uuid import UUID as PyUUID
-from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.session import Base
@@ -35,11 +34,13 @@ class Delivery(Base):
     attempt_count: Mapped[int] = mapped_column(default=0)
     
     last_error: Mapped[str | None] = mapped_column(
-        String(500)
+        String(500), 
+        nullable=True
     )   
     
     next_retry_at: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=True)
+        DateTime(timezone=True),
+        nullable=True
     )
     
     created_at: Mapped[datetime] = mapped_column(
