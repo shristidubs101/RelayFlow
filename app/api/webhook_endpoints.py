@@ -1,16 +1,17 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from starlette import status
 
-
 from app.db.session import get_db
-from app.exceptions import DuplicateWebhookEndpointError, WebhookEndpointNotFoundError
+
 from app.schemas.webhook_endpoint import (
     WebhookEndpointCreate,
     WebhookEndpointResponse,
     WebhookEndpointUpdate,
 )
+
 from app.services import webhook_endpoint
+
 
 router = APIRouter()
 
@@ -24,30 +25,22 @@ def create_webhook_endpoint(
     endpoint: WebhookEndpointCreate,
     db: Session = Depends(get_db),
 ):
-    try:
-        return webhook_endpoint.create_webhook_endpoint(
-            db=db,
-            endpoint=endpoint,
-        )
-
-    except DuplicateWebhookEndpointError as exc:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail=str(exc),
-        )
-        
+    return webhook_endpoint.create_webhook_endpoint(
+        db=db,
+        endpoint=endpoint,
+    )
 
 
 @router.get(
     "/webhook-endpoints",
     response_model=list[WebhookEndpointResponse],
 )
-
 def get_webhook_endpoints(
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
-    return webhook_endpoint.get_webhook_endpoints(db=db)
-
+    return webhook_endpoint.get_webhook_endpoints(
+        db=db,
+    )
 
 
 @router.get(
@@ -58,39 +51,27 @@ def get_webhook_endpoint(
     endpoint_id: int,
     db: Session = Depends(get_db),
 ):
-    try:
-        return webhook_endpoint.get_webhook_endpoint(db=db, endpoint_id=endpoint_id)
-    except WebhookEndpointNotFoundError as exc:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(exc),
-        )
-        
+    return webhook_endpoint.get_webhook_endpoint(
+        db=db,
+        endpoint_id=endpoint_id,
+    )
 
 
-@router.patch("/webhook-endpoints/{endpoint_id}", response_model=WebhookEndpointResponse,
-              status_code = status.HTTP_200_OK)
+@router.patch(
+    "/webhook-endpoints/{endpoint_id}",
+    response_model=WebhookEndpointResponse,
+)
 def update_webhook_endpoint(
     endpoint_id: int,
     endpoint_update: WebhookEndpointUpdate,
-    db : Session = Depends(get_db),
-    
+    db: Session = Depends(get_db),
 ):
-    try:
-        return webhook_endpoint.update_webhook_endpoint(db = db, endpoint_id=endpoint_id, endpoint_update=endpoint_update)
-    
-    except WebhookEndpointNotFoundError as exc:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(exc),
-        )
-        
-    except DuplicateWebhookEndpointError as exc:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail=str(exc),
-        )
-        
+    return webhook_endpoint.update_webhook_endpoint(
+        db=db,
+        endpoint_id=endpoint_id,
+        endpoint_update=endpoint_update,
+    )
+
 
 @router.delete(
     "/webhook-endpoints/{endpoint_id}",
@@ -100,11 +81,7 @@ def delete_webhook_endpoint(
     endpoint_id: int,
     db: Session = Depends(get_db),
 ):
-    try:
-        webhook_endpoint.delete_webhook_endpoint(db=db, endpoint_id=endpoint_id)
-        
-    except WebhookEndpointNotFoundError as exc:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(exc),
-        )
+    webhook_endpoint.delete_webhook_endpoint(
+        db=db,
+        endpoint_id=endpoint_id,
+    )
