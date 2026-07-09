@@ -1,7 +1,7 @@
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from app.exceptions import (
+from app.core.exceptions import (
     DuplicateWebhookEndpointError,
     WebhookEndpointNotFoundError,
 )

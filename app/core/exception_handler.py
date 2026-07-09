@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 
-from app.exceptions import (
+from app.core.exceptions import (
     DuplicateWebhookEndpointError,
     WebhookEndpointNotFoundError,
 )

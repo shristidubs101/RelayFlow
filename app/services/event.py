@@ -10,10 +10,7 @@ def create_event(
     db: Session,
     event: EventCreate,
 ) -> Event:
-    event_obj = Event(
-        event_type = event.event_type,
-        payload = event.payload,
-    )
+    event_obj = Event(**event.model_dump())
     
     try:
         db.add(event_obj)
@@ -24,6 +21,6 @@ def create_event(
         db.refresh(event_obj) 
         return event_obj
     
-    except:
+    except Exception:
         db.rollback()  # Rollback the transaction in case of an error
         raise
