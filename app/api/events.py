@@ -6,6 +6,7 @@ from app.schemas.events import EventCreate, EventResponse
 
 from app.services import event
 
+
 router = APIRouter()
 
 @router.post(
@@ -21,4 +22,3 @@ def create_event(
         db=db,
         event=event_,
     )
-
