@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 
 from app.core.exceptions import (
+    DeliveryNotFoundError,
     DuplicateWebhookEndpointError,
     WebhookEndpointNotFoundError,
 )
@@ -32,6 +33,17 @@ async def duplicate_webhook_endpoint_handler(
         },
     )
 
+async def delivery_not_found_handler(
+    request: Request,
+    exc: DeliveryNotFoundError,
+):
+    return JSONResponse(
+        status_code=status.HTTP_404_NOT_FOUND,
+        content={
+            "detail": str(exc),
+        },
+    )
+
 
 def register_exception_handlers(
     app: FastAPI,
@@ -45,4 +57,9 @@ def register_exception_handlers(
     app.add_exception_handler(
         DuplicateWebhookEndpointError,
         duplicate_webhook_endpoint_handler,
+    )
+    
+    app.add_exception_handler(
+        DeliveryNotFoundError,
+        delivery_not_found_handler,
     )

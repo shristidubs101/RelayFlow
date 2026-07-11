@@ -16,3 +16,12 @@ class WebhookEndpointNotFoundError(Exception):
         message: str = "The requested webhook endpoint does not exist.",
     ):
         super().__init__(message)
+
+class DeliveryNotFoundError(Exception):
+    """Raised when a delivery does not exist."""
+
+    def __init__(
+        self,
+        message: str = "The requested delivery does not exist.",
+    ):
+        super().__init__(message)
