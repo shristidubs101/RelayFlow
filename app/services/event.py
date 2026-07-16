@@ -4,6 +4,7 @@ from app.models.event import Event
 from app.schemas.events import EventCreate
 from app.services.deliveries import create_deliveries
 from app.services.webhook_endpoint import get_webhook_endpoints
+from app.tasks.delivery import process_delivery
 
 
 def create_event(
@@ -16,11 +17,22 @@ def create_event(
         db.add(event_obj)
         db.flush()  # Flush to get the event ID before creating deliveries
         endpoints = get_webhook_endpoints(db)
-        create_deliveries(db, event_obj.id, endpoints)
+        deliveries = create_deliveries(db, event_obj.id, endpoints)
         db.commit()  # Commit the transaction to save the event and deliveries
+        for delivery in deliveries:
+            process_delivery.delay(delivery.id)
         db.refresh(event_obj) 
         return event_obj
     
     except Exception:
         db.rollback()  # Rollback the transaction in case of an error
         raise
+
+def get_events(
+    db: Session,
+) -> list[Event]:
+
+    return (
+        db.query(Event)
+        .all()
+    )

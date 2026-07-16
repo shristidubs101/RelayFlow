@@ -1,3 +1,2 @@
-from app.core.config import settings
-
-print(settings.DATABASE_URL)
+from datetime import datetime, timezone
+print("NOW UTC:", datetime.now(timezone.utc))
