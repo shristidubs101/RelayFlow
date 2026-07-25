@@ -64,3 +64,4 @@ def handle_delivery_failure(
         delivery.next_retry_at = calculate_next_retry(
             delivery.attempt_count
         )
+    

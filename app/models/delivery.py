@@ -61,3 +61,8 @@ class Delivery(Base):
     endpoint: Mapped["WebhookEndpoint"] = relationship(
         back_populates="deliveries"
     )
+    
+    attempts: Mapped[list["DeliveryAttempt"]] = relationship(
+        back_populates= "delivery",
+        cascade="all, delete-orphan",
+    )
