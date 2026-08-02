@@ -16,6 +16,7 @@ class DeliveryStatus(str, PyEnum):
     PROCESSING = "processing"
     SUCCESS = "success"
     FAILED = "failed" 
+    DEAD_LETTER = "dead_letter"
     
 class Delivery(Base):
     __tablename__ = "deliveries"

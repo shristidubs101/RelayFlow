@@ -5,11 +5,14 @@ from app.core.exceptions import (
     DuplicateWebhookEndpointError,
     WebhookEndpointNotFoundError,
 )
+from app.core.logging import get_logger
 from app.models.webhook_endpoint import WebhookEndpoint
 from app.schemas.webhook_endpoint import (
     WebhookEndpointCreate,
     WebhookEndpointUpdate,
 )
+
+logger = get_logger(__name__)
 
 
 def create_webhook_endpoint(
@@ -28,12 +31,21 @@ def create_webhook_endpoint(
 
     except IntegrityError as exc:
         db.rollback()
+        logger.warning(
+            "Attempted to create duplicate webhook endpoint: %s",
+            endpoint.url,
+        )
         raise DuplicateWebhookEndpointError() from exc
 
     db.refresh(db_endpoint)
 
-    return db_endpoint
+    logger.info(
+        "Webhook endpoint %s created (id=%s)",
+        db_endpoint.url,
+        db_endpoint.id,
+    )
 
+    return db_endpoint
 
 
 def get_webhook_endpoints(
@@ -52,7 +64,6 @@ def get_webhook_endpoints(
     )
 
 
-
 def get_webhook_endpoint(
     db: Session,
     endpoint_id: int,
@@ -67,7 +78,6 @@ def get_webhook_endpoint(
         raise WebhookEndpointNotFoundError()
 
     return endpoint
-
 
 
 def update_webhook_endpoint(
@@ -94,12 +104,20 @@ def update_webhook_endpoint(
 
     except IntegrityError as exc:
         db.rollback()
+        logger.warning(
+            "Attempted to update webhook endpoint %s with duplicate URL",
+            endpoint_id,
+        )
         raise DuplicateWebhookEndpointError() from exc
 
     db.refresh(endpoint)
 
-    return endpoint
+    logger.info(
+        "Webhook endpoint %s updated",
+        endpoint.id,
+    )
 
+    return endpoint
 
 
 def delete_webhook_endpoint(
@@ -115,3 +133,8 @@ def delete_webhook_endpoint(
     endpoint.is_active = False
 
     db.commit()
+
+    logger.info(
+        "Webhook endpoint %s deactivated",
+        endpoint.id,
+    )

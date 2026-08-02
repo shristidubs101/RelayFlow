@@ -9,6 +9,7 @@ from app.services import event
 
 router = APIRouter()
 
+
 @router.post(
     "/event",
     response_model=EventResponse,
@@ -17,11 +18,12 @@ router = APIRouter()
 def create_event(
     event_: EventCreate,
     db: Session = Depends(get_db),
-)-> EventResponse:
+) -> EventResponse:
     return event.create_event(
         db=db,
         event=event_,
     )
+
 
 @router.get(
     "/events",
